@@ -31,7 +31,7 @@ namespace Dashbord {
 			string username = "tanomartinoli";
 			lblCargo.Text = UsuarioAdapter.ReadCargo(username).Rows[0][0].ToString();
 			string id = idSede.ToString();
-			lblMaximo.Text = $"Maximo: {SedeAdapter.ReadMaxEntradas(id) - EntradaAdapter.ReadCantEntradas(idSede.ToString())} entradas en la \nSede {UsuarioAdapter.ReadSede(username).Rows[0][0]}";
+			lblMaximo.Text = $"Maximo: {SedeAdapter.ReadMaxEntradas(id)} entradas en la \nSede {UsuarioAdapter.ReadSede(username).Rows[0][0]}";
 		}
 
         private void tomarCantidadEntradas(object sender, EventArgs e)

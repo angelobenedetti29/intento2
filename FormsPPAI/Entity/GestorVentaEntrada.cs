@@ -160,5 +160,24 @@ namespace Dashbord.Entity
             int cantidadMaxima = Actual.mostrarCantidadMaximaVisitantes(Sede);
             return cantidadMaxima;
         }
+        public static bool SolicitarConfirmacionVenta()
+        {
+            return MessageBox.Show("Confirmar?", "Confirmar", MessageBoxButtons.YesNo) == DialogResult.Yes ? true : false;
+        }
+        public static void GenerarEntradas(string cantidad ,float monto)
+        {
+            EntradaAdapter.UpdateEntradas(cantidad.ToString());
+            var entrada = new Entrada();
+            entrada.HoraVenta = DateTime.Now;
+            entrada.Numero = BuscarUltimoNumeroEntrada();
+            entrada.Monto = monto;
+
+        }
+        public static int BuscarUltimoNumeroEntrada()
+        {
+            return EntradaAdapter.ReadCantEntradas("1");
+        }
+        
+
     }
 }

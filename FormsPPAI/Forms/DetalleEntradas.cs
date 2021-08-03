@@ -1,5 +1,5 @@
 ﻿using Dashbord.DataAccessLayer;
-using Dashbord.Forms;
+using Dashbord.Entity;
 using System.Windows.Forms;
 
 namespace Dashbord {
@@ -27,10 +27,12 @@ namespace Dashbord {
 		private void btnCloseForm_Click(object sender, System.EventArgs e) => Close();
 
 		private void btnAceptar_Click(object sender, System.EventArgs e) {
-			EntradaAdapter.UpdateEntradas(cantidad.ToString());
+			if (GestorVentaEntrada.SolicitarConfirmacionVenta()) return;
+
+			GestorVentaEntrada.GenerarEntradas(cantidad.ToString() , precioTotal);
 
 			MessageBox.Show("Exito.");
-			new Ticket().ShowDialog();
+			
 		}
 
 		private void DetalleEntradas_Load(object sender, System.EventArgs e) {
