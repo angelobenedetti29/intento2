@@ -1,4 +1,5 @@
 ﻿using Dashbord.DataAccessLayer;
+using Dashbord.Forms;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -13,6 +14,7 @@ namespace Dashbord.Entity
     {
         public static int Empleado { get; set; }
         public static int Entrada { get; set; }
+        public static int Usuario { get; set; }
         public static int ImpresoraEntradas { get; set; }
         public static int PantallaEntrada { get; set; }
         public static int PantallaVentaEntrada { get; set; }
@@ -21,41 +23,36 @@ namespace Dashbord.Entity
         public static int Sesion { get; set; }
         public static int Visita { get; set; }
         public static bool ServicioGuia { get; set; }
+        public static int DuracionObras { get; set; }
 
-        public static Empleado logueado { get; set; }
-        public static void opcionVentaEntrada()
+        //public static Empleado logueado { get; set; }
+        public static void opcionVentaEntrada(int idUsuario)
         {
+            Usuario = idUsuario;
             buscarEmpleadoLogueado();
         }
         public static void buscarEmpleadoLogueado()
         {
-            var sesion = new Sesion();
-            var tupla = sesion.getEmpleadoEnSesion();
-            logueado = tupla.Item1;
-            Empleado = logueado.Dni;
+            var actual = new Sesion();
+            var tupla = actual.getEmpleadoEnSesion(Usuario);
+            //logueado = tupla.Item1;
+            Empleado = tupla.Item1.Dni;
             Sesion = tupla.Item2;
             buscarSede();
         }
         public static void buscarSede()
         {
-            int sede = obtenerSede();
+            Empleado logueado = new Empleado();
+            int sede = logueado.obtenerSede(Empleado);
             Sede = sede;
             buscarTarifasDeSede();
-        }
-
-        public static int obtenerSede()
-        {
-            int sede = logueado.IdSede;
-            return sede;
         }
 
         public static void buscarTarifasDeSede()
         {
             var Actual = new Sede();
-            DataTable tablaTarifas = Actual.obtenerTarifasVigentes();
-            //return sedeActual.obtenerTarifasVigentes();
-            string username = "tanomartinoli";
-            TarifasSede pantalla = new TarifasSede(username);
+            DataTable tablaTarifas = Actual.obtenerTarifasVigentes(Sede);
+            TarifasSede pantalla = new TarifasSede(Usuario);
             pantalla.mostrarTarifasVigentes(tablaTarifas);
             pantalla.ShowDialog();
         }
@@ -65,30 +62,30 @@ namespace Dashbord.Entity
             Visita = idVisita;
             ServicioGuia = servicioGuia;
             buscarExposicionVigente();
-            new ElegirEntradas(idEntrada, idVisita, servicioGuia, Sede).ShowDialog();
+            new ElegirEntradas(Entrada, Visita, ServicioGuia, Sede, Usuario).ShowDialog();
         }
 
         public static void buscarExposicionVigente()
         {
             var Actual = new Sede();
-            var duracionesObra = Actual.calcularDuracionExposicionesVigentes();
+            var duracionesObrasExposicionesVigentes = Actual.calcularDuracionExposicionesVigentes(Sede);
+            DuracionObras = duracionesObrasExposicionesVigentes;
         }
         public static void tomarCantidadEntradas(int nroEntradas)
         {
             int capacidad = buscarCapacidadSede();
-            obtenerFechaHoraActual();
-            int cantidadVisitantes = buscarVisitantesEnSede(Sede);
-            var reservaEnFechaHoraSede = buscarReservasParaAsistir();
-            ReservaVisita = reservaEnFechaHoraSede.NroReserva;
-            bool loSupero = validarLimiteVisitantes(capacidad, cantidadVisitantes, reservaEnFechaHoraSede, nroEntradas);
+            var fechaHoraActual = obtenerFechaHoraActual();
+            int cantidadVisitantes = buscarVisitantesEnSede(Sede, fechaHoraActual);
+            int reservaAlumnosConfirmados = buscarReservaParaAsistir(Sede, fechaHoraActual);
+            bool loSupero = validarLimiteVisitantes(capacidad, cantidadVisitantes, reservaAlumnosConfirmados, nroEntradas);
             if (loSupero)
             {
-                mensaje();
+                new ElegirEntradas().mensajeUsuario();
             }
             else
             {
                 int precioTotal = calcularTotalVenta(nroEntradas);
-                DetalleEntradas ventana = new DetalleEntradas("tanomartinoli", Entrada.ToString(), Visita.ToString(), ServicioGuia, nroEntradas, precioTotal, Sede);
+                DetalleEntradas ventana = new DetalleEntradas(Usuario, Entrada.ToString(), Visita.ToString(), ServicioGuia, nroEntradas, precioTotal, Sede);
                 ventana.ShowDialog();
             }
         }
@@ -99,11 +96,10 @@ namespace Dashbord.Entity
             return precioTotal;
         }
 
-        private static bool validarLimiteVisitantes(int capacidad, int cantidadVisitantes, Reserva reserva, int nroEntradas)
+        private static bool validarLimiteVisitantes(int capacidad, int cantidadVisitantes, int alumnosConfirmados, int nroEntradas)
         {
             bool loSupero = false;
-            int cantidadConfirmados = int.Parse(reserva.CantidadAlumnosConfirmados.ToString());
-            int capacidadActual = capacidad - (cantidadVisitantes + cantidadConfirmados);
+            int capacidadActual = capacidad - (cantidadVisitantes + alumnosConfirmados);
             if (nroEntradas > capacidadActual)
             {
                 loSupero = true;
@@ -111,11 +107,11 @@ namespace Dashbord.Entity
             return loSupero;
         }
 
-        public static Reserva buscarReservasParaAsistir()
+        public static int buscarReservaParaAsistir(int Sede, DateTime fechaHoraActual)
         {
-            DataTable tablaReservas = ReservaAdapter.ObtenerReservas(Sede.ToString());
+            DataTable tablaReservas = ReservaAdapter.ObtenerReservas();
             DataTable tablaReservasSede = tablaReservas.Clone();
-            Reserva reservaConfirmada = new Reserva();
+            Reserva reservaRelevante = new Reserva();
             foreach(DataRow reservas in tablaReservas.Rows)
             {
                 Reserva reserva = new Reserva();
@@ -128,30 +124,36 @@ namespace Dashbord.Entity
                 reserva.HoraInicioReal = reservas.ItemArray[6].ToString();
                 reserva.NroReserva = int.Parse(reservas.ItemArray[0].ToString());
                 int sedeReserva = int.Parse(reservas.ItemArray[8].ToString());
-                bool es = reserva.sonParaFechaHoraSede(reserva, Sede, sedeReserva);
+                bool es = reserva.sonParaFechaHoraSede(reserva, Sede, sedeReserva, fechaHoraActual);
                 if (es)
                 {
-                    reservaConfirmada = reserva;
+                    reservaRelevante = reserva;
+                    ReservaVisita = reservaRelevante.NroReserva;
                 }
             }
-            return reservaConfirmada;
+            return reservaRelevante.CantidadAlumnosConfirmados;
         }
 
-        private static void mensaje()
+        public static DateTime obtenerFechaHoraActual()
         {
-            MessageBox.Show("El nro de entradas que desea comprar supera el limite. Intentelo de nuevo");
+            //DateTime fechaHoraActual = DateTime.Now;
+            DateTime fechaHoraActual = DateTime.Parse("08/10/2021 11:00"); 
+            return fechaHoraActual;
         }
 
-        public static void obtenerFechaHoraActual()
+        public static int buscarVisitantesEnSede(int Sede, DateTime fechaHoraActual)
         {
-            DateTime fechaHoraActual = DateTime.Now;
-        }
-
-        public static int buscarVisitantesEnSede(int Sede)
-        {
-            var entrada = new Entrada();
             int visitantes = SedeAdapter.ObtenerVisitantes(Sede.ToString());
-            return visitantes;
+            var entrada = new Entrada();
+            var son = entrada.sonDeFechaHoraSede(Sede, fechaHoraActual);
+            if (son)
+            {
+                return visitantes;
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         public static int buscarCapacidadSede()
@@ -160,22 +162,44 @@ namespace Dashbord.Entity
             int cantidadMaxima = Actual.mostrarCantidadMaximaVisitantes(Sede);
             return cantidadMaxima;
         }
-        public static bool SolicitarConfirmacionVenta()
+        public static void tomarConfirmacionVenta(string cantidad, int precioTotal)
         {
-            return MessageBox.Show("Confirmar?", "Confirmar", MessageBoxButtons.YesNo) == DialogResult.Yes ? true : false;
+            var ultimoNro = buscarUltimoNumeroEntrada();
+            generarEntradas(cantidad, precioTotal, ultimoNro);
+            new DetalleEntradas().mensajeEntradas();
+            imprimirEntradas(int.Parse(cantidad));
         }
-        public static void GenerarEntradas(string cantidad ,float monto)
-        {
-            EntradaAdapter.UpdateEntradas(cantidad.ToString());
-            var entrada = new Entrada();
-            entrada.HoraVenta = DateTime.Now;
-            entrada.Numero = BuscarUltimoNumeroEntrada();
-            entrada.Monto = monto;
 
-        }
-        public static int BuscarUltimoNumeroEntrada()
+        public static void imprimirEntradas(int cantidad)
         {
-            return EntradaAdapter.ReadCantEntradas("1");
+            new InformeEntrada(cantidad).ShowDialog();
+        }
+
+        public static void finCU()
+        {
+            Application.Exit();
+        }
+
+        public static void generarEntradas(string cantidad ,int precioTotal, int ultimoNro)
+        {
+            float monto = precioTotal / int.Parse(cantidad);
+            int idTarifa = TarifaAdapter.ReadTarifaPuntual(Sede.ToString(), Entrada.ToString(), Visita.ToString());
+            for (int i = 0; i < int.Parse(cantidad); i++)
+            {
+                var entrada = new Entrada();
+                entrada.HoraVenta = DateTime.Now;
+                entrada.FechaVencimiento = DateTime.Parse("08/15/2021 11:00");
+                entrada.Numero = ultimoNro;
+                entrada.Monto = monto;
+                ultimoNro = ultimoNro + 1;
+                EntradaAdapter.UpdateEntradasCompradas(idTarifa, entrada.HoraVenta, entrada.Monto);
+            }
+            EntradaAdapter.UpdateEntradasPorSede(cantidad.ToString(), Sede.ToString());
+        }
+        public static int buscarUltimoNumeroEntrada()
+        {
+            return new Entrada().getUltimoNroEntrada();
+            //return EntradaAdapter.ReadCantEntradas("1");
         }
         
 

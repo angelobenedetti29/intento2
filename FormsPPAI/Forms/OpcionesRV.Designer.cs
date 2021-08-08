@@ -122,7 +122,7 @@ namespace Dashbord {
             this.btnRegistrarVenta.TabIndex = 22;
             this.btnRegistrarVenta.Text = "Registrar Venta de Entradas";
             this.btnRegistrarVenta.UseVisualStyleBackColor = true;
-            this.btnRegistrarVenta.Click += new System.EventHandler(this.btnRegistrarVenta_Click);
+            this.btnRegistrarVenta.Click += new System.EventHandler(this.tomarOpcionVentaEntrada);
             // 
             // OpcionesRV
             // 

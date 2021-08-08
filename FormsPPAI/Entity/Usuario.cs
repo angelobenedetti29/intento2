@@ -9,11 +9,10 @@ namespace Dashbord.Entity
         public int Caducidad { get; set; }
         public string Contraseña { get; set; }
         public string Nombre { get; set; }
-        //public Empleado obtenerEmpleado() => UsuarioAdapter.ReadUsuario("tanomartinoli", "#tano12345");
-        public Tuple<Empleado,int> obtenerEmpleado()
+        public Tuple<Empleado,int> obtenerEmpleado(int idUsuario)
         {
             DataTable tabla = new DataTable();
-            tabla = UsuarioAdapter.ReadUsuarioEnSesion("tanomartinoli", "#tano12345");
+            tabla = UsuarioAdapter.ReadUsuarioEnSesion(idUsuario.ToString());
             Empleado empleado = new Empleado();
             empleado.Dni = int.Parse(tabla.Rows[0][0].ToString());
             empleado.Nombre = tabla.Rows[0][1].ToString();
@@ -28,11 +27,9 @@ namespace Dashbord.Entity
             }
             empleado.Cuit = tabla.Rows[0][4].ToString();
             empleado.Domicilio = tabla.Rows[0][5].ToString();
-            DateTime fecha = new DateTime();
-            fecha = DateTime.Parse(tabla.Rows[0][6].ToString());
+            DateTime fecha = DateTime.Parse(tabla.Rows[0][6].ToString());
             empleado.FechaNacimiento = fecha;
-            DateTime fechaIngreso = new DateTime();
-            fechaIngreso = DateTime.Parse(tabla.Rows[0][7].ToString());
+            DateTime fechaIngreso = DateTime.Parse(tabla.Rows[0][7].ToString());
             empleado.FechaIngreso = fechaIngreso;
             empleado.Email = tabla.Rows[0][8].ToString();
             empleado.EsHombre = bool.Parse(tabla.Rows[0][9].ToString());

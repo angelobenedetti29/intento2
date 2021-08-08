@@ -8,15 +8,32 @@ namespace Dashbord.Entity
 {
     public class Sede
     {
-        public DataTable obtenerTarifasVigentes()
+        bool primerIteracion = true;
+        public DataTable obtenerTarifasVigentes(int idSede)
         {
-            var tarifa = new Tarifa();
-            return tarifa.mostrarMontosVigentes();
+            DataTable tarifas = TarifaAdapter.ReadTarifasSede(idSede.ToString());
+            DataTable tarifasVigentes = new DataTable();
+            foreach (DataRow tarifa in tarifas.Rows)
+            {
+                Tarifa tar = new Tarifa();
+                DataTable tarifapuntual = tar.mostrarMontosVigentesYNombres(tarifa.ItemArray[0].ToString(),idSede.ToString());
+                if (primerIteracion)
+                {
+                    tarifasVigentes = tarifapuntual.Clone();
+                    primerIteracion = false;
+                }
+                if (tarifapuntual.Rows.Count == 1)
+                {
+                    tarifasVigentes.ImportRow(tarifapuntual.Rows[0]);
+                    tarifapuntual.Rows.Clear();
+                }
+            }
+            return tarifasVigentes;
         }
 
-        public int calcularDuracionExposicionesVigentes()
+        public int calcularDuracionExposicionesVigentes(int idSede)
         {
-            DataTable tabla_Exposiciones = SedeAdapter.obtenerExposiciones();
+            DataTable tabla_Exposiciones = SedeAdapter.obtenerExposiciones(idSede.ToString());
             DataTable tabla_ExposicionesVigentes = new DataTable();
             tabla_ExposicionesVigentes = tabla_Exposiciones.Clone();
             foreach (DataRow exposicion in tabla_Exposiciones.Rows)
@@ -45,7 +62,7 @@ namespace Dashbord.Entity
             {
                 Exposicion expov = new Exposicion();
                 expov.IdExposicion = int.Parse(exposicionVigente.ItemArray[0].ToString());
-                duracionObrasExpuestas = expov.calcularDuracionObrasExpuestas_buscarDuracionObras(expov.IdExposicion.ToString());
+                duracionObrasExpuestas = duracionObrasExpuestas + expov.calcularDuracionObrasExpuestas_buscarDuracionObras(expov.IdExposicion.ToString());
             }
             return duracionObrasExpuestas;
         }

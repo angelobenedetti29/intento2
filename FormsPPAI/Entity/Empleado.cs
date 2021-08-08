@@ -1,4 +1,6 @@
 ﻿using System;
+using Dashbord.DataAccessLayer;
+
 
 namespace Dashbord.Entity
 {
@@ -17,5 +19,11 @@ namespace Dashbord.Entity
         public string Telefono { get; set; }
         public int IdCargo { get; set; }
         public int IdSede { get; set; }
+
+        public int obtenerSede(int idEmpleado)
+        {
+            int sedeEmpleado = EmpleadoAdapter.obtenerSedeEmpleado(idEmpleado.ToString());
+            return sedeEmpleado;
+        }
     }
 }

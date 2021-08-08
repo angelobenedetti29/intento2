@@ -12,15 +12,10 @@ namespace Dashbord.Entity
     {        
         public int MontoAdicionalGuia { get; set; }
 
-        public DataTable mostrarMontosVigentes()
+        public DataTable mostrarMontosVigentesYNombres(string idTarifa, string idSede)
         {
-            DataTable tarifas = TarifaAdapter.ReadTarifasWithMontos();
-            foreach (DataRow tarifa in tarifas.Rows)
-            {
-                tarifa.ItemArray[0].ToString();
-                tarifa.ItemArray[1].ToString();
-            }
-            return tarifas;
+            DataTable tarifa = TarifaAdapter.ReadTarifaWithMontosVigentesSede(idTarifa, idSede);
+            return tarifa;
         }
     }
 }

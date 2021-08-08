@@ -7,18 +7,18 @@ using System.Windows.Forms;
 
 namespace Dashbord {
 	public partial class ElegirTarifa : Form {
-		private string username;
+		private int idUsuario;
 
-		public ElegirTarifa(string username) {
+		public ElegirTarifa(int idUser) {
 			InitializeComponent();
 
-			this.username = username;
+			this.idUsuario = idUser;
 		}
 
 		private void btnCloseForm_Click(object sender, EventArgs e) => Close();
 
 		private void ElegirTarifa_Load(object sender, EventArgs e) {
-			lblCargo.Text = UsuarioAdapter.ReadCargo(username).Rows[0][0].ToString();
+			lblCargo.Text = UsuarioAdapter.ReadCargo(idUsuario.ToString()).Rows[0][0].ToString();
 
 			try {
 				Generics.LoadComboBox(cmbEntrada, "nombre", "id" ,() => TiposEntradasAdapter.ReadTipoEntrada());
@@ -42,8 +42,8 @@ namespace Dashbord {
 				servicioGuia = true;
             }
 			GestorVentaEntrada.tomarSeleccionTarifa(int.Parse(cmbEntrada.SelectedValue.ToString()), int.Parse(cmbVisita.SelectedValue.ToString()),servicioGuia);
-			MessageBox.Show("Se guardo la tarifa correctamente");
-			//new ElegirEntradas(int.Parse(cmbEntrada.SelectedValue.ToString()), int.Parse(cmbVisita.ToString()),servicioGuia).ShowDialog();
+			//MessageBox.Show("Se guardo la tarifa correctamente");
+			////new ElegirEntradas(int.Parse(cmbEntrada.SelectedValue.ToString()), int.Parse(cmbVisita.ToString()),servicioGuia).ShowDialog();
 
 			// TODO: preguntarle a la profe que hacer con este dato
 			//ObraAdapter.ReadTiempo();

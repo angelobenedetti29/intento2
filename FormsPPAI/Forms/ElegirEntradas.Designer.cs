@@ -35,6 +35,7 @@ namespace Dashbord {
             this.btnCloseForm = new System.Windows.Forms.Button();
             this.txtNroEntradas = new System.Windows.Forms.MaskedTextBox();
             this.lblMaximo = new System.Windows.Forms.Label();
+            this.lbl_Disponibles = new System.Windows.Forms.Label();
             this.panelRV.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pibUsuario)).BeginInit();
             this.SuspendLayout();
@@ -163,12 +164,23 @@ namespace Dashbord {
             this.lblMaximo.Size = new System.Drawing.Size(0, 20);
             this.lblMaximo.TabIndex = 23;
             // 
+            // lbl_Disponibles
+            // 
+            this.lbl_Disponibles.AutoSize = true;
+            this.lbl_Disponibles.BackColor = System.Drawing.Color.Transparent;
+            this.lbl_Disponibles.ForeColor = System.Drawing.Color.Red;
+            this.lbl_Disponibles.Location = new System.Drawing.Point(628, 447);
+            this.lbl_Disponibles.Name = "lbl_Disponibles";
+            this.lbl_Disponibles.Size = new System.Drawing.Size(0, 20);
+            this.lbl_Disponibles.TabIndex = 24;
+            // 
             // ElegirEntradas
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(59)))), ((int)(((byte)(52)))), ((int)(((byte)(52)))));
             this.ClientSize = new System.Drawing.Size(1185, 834);
+            this.Controls.Add(this.lbl_Disponibles);
             this.Controls.Add(this.lblMaximo);
             this.Controls.Add(this.txtNroEntradas);
             this.Controls.Add(this.btnCloseForm);
@@ -201,5 +213,6 @@ namespace Dashbord {
 		private System.Windows.Forms.Button btnCloseForm;
 		private System.Windows.Forms.MaskedTextBox txtNroEntradas;
 		private System.Windows.Forms.Label lblMaximo;
-	}
+        private System.Windows.Forms.Label lbl_Disponibles;
+    }
 }

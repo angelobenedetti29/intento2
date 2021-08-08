@@ -1,4 +1,5 @@
-﻿using Dashbord.Utilities;
+﻿using Dashbord.DataAccessLayer;
+using Dashbord.Utilities;
 using System;
 using System.Data.SqlClient;
 using System.Windows.Forms;
@@ -16,7 +17,7 @@ namespace Dashbord {
 			}
 
 			try {
-				if (DataAccessLayer.UsuarioAdapter.ReadUsuarioEnSesion(txtNombreUsuario.Text.Trim(), txtPassword.Text.Trim()).Rows.Count != 1) {
+				if (UsuarioAdapter.ReadUsuarioExiste(txtNombreUsuario.Text.Trim(), txtPassword.Text.Trim()).Rows.Count != 1) {
 					MessageBox.Show("Usuario inexistente");
 					Generics.CleanFields(this);
 
@@ -26,9 +27,12 @@ namespace Dashbord {
 				MessageBox.Show("Error con la base de datos");
 				Application.Exit();
 			}
-
-			new OpcionesRV(txtNombreUsuario.Text.Trim()).Show();
+			int idUsuario = UsuarioAdapter.ReadIDUsuario(txtNombreUsuario.Text.Trim(), txtPassword.Text.Trim());
+			new OpcionesRV(idUsuario).ShowDialog();
 			Hide();
 		}
-	}
+
+        private void IniciarSesion_Load(object sender, EventArgs e)
+        {}
+    }
 }

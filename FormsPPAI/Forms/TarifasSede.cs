@@ -5,19 +5,19 @@ using System.Windows.Forms;
 
 namespace Dashbord {
 	public partial class TarifasSede : Form {
-		private string username;
+		private int idUsuario;
 
-		public TarifasSede(string username) {
+		public TarifasSede(int idUser) {
 			InitializeComponent();
 			
-			this.username = username;
+			this.idUsuario = idUser;
 		}
 		public void mostrarTarifasVigentes(DataTable tablaTarifas)
         {
 			dtgTarifaSede.DataSource = tablaTarifas;
 		}
 
-		private void btnAceptar_Click(object sender, EventArgs e) => new ElegirTarifa(username).ShowDialog();
+		private void btnAceptar_Click(object sender, EventArgs e) => new ElegirTarifa(idUsuario).ShowDialog();
 
 		private void TarifasSede_Load(object sender, EventArgs e) {
 			//var gestor = new GestorVentaEntrada();

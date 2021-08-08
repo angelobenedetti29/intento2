@@ -18,10 +18,10 @@ namespace Dashbord.Entity
         public string HoraInicioReal { get; set; }
         public int NroReserva { get; set; }
 
-        public bool sonParaFechaHoraSede(Reserva reserva, int Sede, int sedeReserva)
+        public bool sonParaFechaHoraSede(Reserva reserva, int Sede, int sedeReserva, DateTime fechaHoraActual)
         {
             bool es = false;
-            if (Sede == sedeReserva)
+            if (Sede == sedeReserva && reserva.FechaHoraReserva == fechaHoraActual)
             {
                 es = true;
             }

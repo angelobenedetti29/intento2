@@ -6,35 +6,29 @@ using System.Windows.Forms;
 
 namespace Dashbord {
 	public partial class OpcionesRV : Form {
-		private string username;
+		private int idUsuario;
 
-		public OpcionesRV(string username) {
+		public OpcionesRV(int idUser) {
 			InitializeComponent();
-			this.username = username;
+			this.idUsuario = idUser;
 		}
-		public void tomarOpcionVentaEntrada()
-        {
-			habilitarPantalla();
-        }
 
         private void habilitarPantalla()
         {
-			GestorVentaEntrada.opcionVentaEntrada();
+			GestorVentaEntrada.opcionVentaEntrada(idUsuario); // Le pasariamos al gestor como parametro que opcion eligio
+            //pero en este caso no hace falta porque se contempla una sola opcion
         }
 
         private void btnCloseForm_Click(object sender, EventArgs e) => Application.Exit();
 
-		//DataTable table = new DataTable();
-		//private void btnRegistrarVenta_Click(object sender, EventArgs e) => new TarifasSede(username,table ).ShowDialog();
-		private void btnRegistrarVenta_Click(object sender, EventArgs e)
-        {
-			tomarOpcionVentaEntrada();
-		}
 
 		private void OpcionesRV_Load(object sender, EventArgs e)
+        {}
+
+        private void tomarOpcionVentaEntrada(object sender, EventArgs e)
         {
-			//tomarOpcionVentaEntrada();
+            habilitarPantalla();
         }
-		//private void OpcionesRV_Load(object sender, EventArgs e) => lblCargo.Text = UsuarioAdapter.ReadCargo(username).Rows[0][0].ToString();
+        //private void OpcionesRV_Load(object sender, EventArgs e) => lblCargo.Text = UsuarioAdapter.ReadCargo(username).Rows[0][0].ToString();
     }
 }
