@@ -201,7 +201,5 @@ namespace Dashbord.Entity
             return new Entrada().getUltimoNroEntrada();
             //return EntradaAdapter.ReadCantEntradas("1");
         }
-        
-
     }
 }
